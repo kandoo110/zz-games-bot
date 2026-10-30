@@ -219,7 +219,6 @@ function sendTelegramMessage(token, chatId, text, replyMarkup) {
 }
 
 function sendTelegramInvoice(token, chatId, title, payload, amount) {
-  // اضافه کردن دکمه لغو و بازگشت به منو در فاکتور پرداخت ستاره
   const invoiceData = JSON.stringify({
     chat_id: chatId,
     title: `Unlock ${title}`,
@@ -244,7 +243,7 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
     family: 4,
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(data = invoiceData)
+      'Content-Length': Buffer.byteLength(invoiceData)
     }
   };
 
