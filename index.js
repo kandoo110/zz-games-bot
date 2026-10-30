@@ -49,7 +49,8 @@ const server = http.createServer((req, res) => {
 
           sendTelegramMessage(BOT_TOKEN, chatId, `🎉 Congratulations! Payment verified successfully.\n\nTap the button below to launch your ${gameName}:`, {
             inline_keyboard: [
-              [{ text: `🚀 Launch ${gameName} (Fullscreen)`, web_app: { url: gameUrl } }]
+              [{ text: `🚀 Launch ${gameName} (Fullscreen)`, web_app: { url: gameUrl } }],
+              [{ text: "🔙 Main Menu", callback_data: "main_menu" }]
             ]
           });
           return;
@@ -99,21 +100,17 @@ const server = http.createServer((req, res) => {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'B-2 Bomber', 'b2_game_access', 50);
           } else if (callbackData === 'buy_space') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'Space War', 'space_game_access', 50);
+          } 
+          // Return to Main Menu handler
+          else if (callbackData === 'main_menu') {
+            sendMainMenu(BOT_TOKEN, chatId);
           }
           return;
         }
 
         // 4. Handle /start or /games commands
         if (text.startsWith('/start') || text.startsWith('/games')) {
-          const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite action game below to view details and unlock permanent access:";
-          const replyMarkup = {
-            inline_keyboard: [
-              [{ text: "🚀 F-35 Fighter Jet (50 Stars)", callback_data: "preview_f35" }],
-              [{ text: "🛸 B-2 Bomber (50 Stars)", callback_data: "preview_b2" }],
-              [{ text: "🌌 Space War (50 Stars)", callback_data: "preview_space" }]
-            ]
-          };
-          sendTelegramMessage(BOT_TOKEN, chatId, responseText, replyMarkup);
+          sendMainMenu(BOT_TOKEN, chatId);
         }
 
       } catch (err) {
@@ -123,7 +120,20 @@ const server = http.createServer((req, res) => {
   }
 });
 
-// Send rich game preview with photo and purchase options
+// Send Main Menu
+function sendMainMenu(token, chatId) {
+  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite action game below to view details and unlock permanent access:";
+  const replyMarkup = {
+    inline_keyboard: [
+      [{ text: "🚀 F-35 Fighter Jet (50 Stars)", callback_data: "preview_f35" }],
+      [{ text: "🛸 B-2 Bomber (50 Stars)", callback_data: "preview_b2" }],
+      [{ text: "🌌 Space War (50 Stars)", callback_data: "preview_space" }]
+    ]
+  };
+  sendTelegramMessage(token, chatId, responseText, replyMarkup);
+}
+
+// Send rich game preview with photo, purchase options, and back button
 function sendGamePreview(token, chatId, gameType) {
   let photoUrl = "";
   let caption = "";
@@ -159,7 +169,8 @@ function sendGamePreview(token, chatId, gameType) {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [
-        [{ text: "💳 Pay 50 Stars & Unlock", callback_data: buyCallback }]
+        [{ text: "💳 Pay 50 Stars & Unlock", callback_data: buyCallback }],
+        [{ text: "🔙 Back to Main Menu", callback_data: "main_menu" }]
       ]
     }
   });
