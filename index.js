@@ -227,12 +227,7 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
     currency: "XTR",
     prices: [
       { label: `${title} Access`, amount: amount }
-    ],
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: "❌ Cancel & Back to Menu", callback_data: "main_menu" }]
-      ]
-    }
+    ]
   });
 
   const options = {
