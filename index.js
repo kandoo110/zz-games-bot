@@ -2,14 +2,12 @@ const http = require('http');
 const https = require('https');
 
 const server = http.createServer((req, res) => {
-  // Health check endpoint for Render
   if (req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'online', platform: 'ZZ Games Bot' }));
     return;
   }
 
-  // Handle Telegram Webhook POST requests
   if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {
@@ -25,13 +23,11 @@ const server = http.createServer((req, res) => {
         const BOT_TOKEN = process.env.BOT_TOKEN;
         if (!BOT_TOKEN) return;
 
-        // 1. Handle Telegram Star Pre-Checkout Query
         if (update.pre_checkout_query) {
           answerPreCheckoutQuery(BOT_TOKEN, update.pre_checkout_query.id);
           return;
         }
 
-        // 2. Handle Successful Payment & Deliver Game Access
         if (update.message?.successful_payment) {
           const chatId = update.message.chat.id;
           const payload = update.message.successful_payment.invoice_payload;
@@ -50,7 +46,7 @@ const server = http.createServer((req, res) => {
           sendTelegramMessage(BOT_TOKEN, chatId, `🎉 Congratulations! Payment verified successfully.\n\nTap the button below to launch your ${gameName}:`, {
             inline_keyboard: [
               [{ text: `🚀 Launch ${gameName} (Fullscreen)`, web_app: { url: gameUrl } }],
-              [{ text: "🔙 Main Menu", callback_data: "main_menu" }]
+              [{ text: "🔙 Back to Main Menu", callback_data: "main_menu" }]
             ]
           });
           return;
@@ -66,7 +62,6 @@ const server = http.createServer((req, res) => {
 
         if (!chatId) return;
 
-        // 3. Handle Inline Button Clicks & Previews
         if (callbackQueryId) {
           const answerData = JSON.stringify({
             callback_query_id: callbackQueryId,
@@ -85,30 +80,24 @@ const server = http.createServer((req, res) => {
           answerReq.write(answerData);
           answerReq.end();
 
-          // Preview handlers
           if (callbackData === 'preview_f35') {
             sendGamePreview(BOT_TOKEN, chatId, 'f35');
           } else if (callbackData === 'preview_b2') {
             sendGamePreview(BOT_TOKEN, chatId, 'b2');
           } else if (callbackData === 'preview_space') {
             sendGamePreview(BOT_TOKEN, chatId, 'space');
-          } 
-          // Purchase / Invoice handlers (50 Stars each)
-          else if (callbackData === 'buy_f35') {
+          } else if (callbackData === 'buy_f35') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'F-35 Fighter Jet', 'f35_game_access', 50);
           } else if (callbackData === 'buy_b2') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'B-2 Bomber', 'b2_game_access', 50);
           } else if (callbackData === 'buy_space') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'Space War', 'space_game_access', 50);
-          } 
-          // Return to Main Menu handler
-          else if (callbackData === 'main_menu') {
+          } else if (callbackData === 'main_menu') {
             sendMainMenu(BOT_TOKEN, chatId);
           }
           return;
         }
 
-        // 4. Handle /start or /games commands
         if (text.startsWith('/start') || text.startsWith('/games')) {
           sendMainMenu(BOT_TOKEN, chatId);
         }
@@ -120,7 +109,6 @@ const server = http.createServer((req, res) => {
   }
 });
 
-// Send Main Menu
 function sendMainMenu(token, chatId) {
   const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite action game below to view details and unlock permanent access:";
   const replyMarkup = {
@@ -133,7 +121,6 @@ function sendMainMenu(token, chatId) {
   sendTelegramMessage(token, chatId, responseText, replyMarkup);
 }
 
-// Send rich game preview with photo, purchase options, and back button
 function sendGamePreview(token, chatId, gameType) {
   let photoUrl = "";
   let caption = "";
@@ -141,24 +128,15 @@ function sendGamePreview(token, chatId, gameType) {
 
   if (gameType === 'f35') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-f35/main/f35.jpg";
-    caption = "🎮 **F-35 Lightning II Air Combat**\n\n" +
-              "✨ High-performance atmospheric dogfight experience\n" +
-              "🎯 Advanced scoring & fluid arcade controls\n\n" +
-              "💎 **Permanent Access:** 50 Telegram Stars";
+    caption = "🎮 **F-35 Lightning II Air Combat**\n\n✨ High-performance atmospheric dogfight experience\n🎯 Advanced scoring & fluid arcade controls\n\n💎 **Permanent Access:** 50 Telegram Stars";
     buyCallback = "buy_f35";
   } else if (gameType === 'b2') {
-    photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-b-2/main/b2.jpg";
-    caption = "🛸 **B-2 Bomber Stealth Mission**\n\n" +
-              "✨ Strategic precision bombing & tactical flight\n" +
-              "🎯 High-stakes defensive operations\n\n" +
-              "💎 **Permanent Access:** 50 Telegram Stars";
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-B-2/main/B-2.jpg";
+    caption = "🛸 **B-2 Bomber Stealth Mission**\n\n✨ Strategic precision bombing & tactical flight\n🎯 High-stakes defensive operations\n\n💎 **Permanent Access:** 50 Telegram Stars";
     buyCallback = "buy_b2";
   } else if (gameType === 'space') {
-    photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-space-war/main/space.jpg";
-    caption = "🌌 **Space War Galaxy**\n\n" +
-              "✨ Epic galactic arcade shooter & cosmic combat\n" +
-              "🎯 Endless waves of interstellar enemies\n\n" +
-              "💎 **Permanent Access:** 50 Telegram Stars";
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-space-war/main/space-war.jpg";
+    caption = "🌌 **Space War Galaxy**\n\n✨ Epic galactic arcade shooter & cosmic combat\n🎯 Endless waves of interstellar enemies\n\n💎 **Permanent Access:** 50 Telegram Stars";
     buyCallback = "buy_space";
   }
 
@@ -241,6 +219,7 @@ function sendTelegramMessage(token, chatId, text, replyMarkup) {
 }
 
 function sendTelegramInvoice(token, chatId, title, payload, amount) {
+  // اضافه کردن دکمه لغو و بازگشت به منو در فاکتور پرداخت ستاره
   const invoiceData = JSON.stringify({
     chat_id: chatId,
     title: `Unlock ${title}`,
@@ -249,7 +228,12 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
     currency: "XTR",
     prices: [
       { label: `${title} Access`, amount: amount }
-    ]
+    ],
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "❌ Cancel & Back to Menu", callback_data: "main_menu" }]
+      ]
+    }
   });
 
   const options = {
@@ -260,7 +244,7 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
     family: 4,
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(invoiceData)
+      'Content-Length': Buffer.byteLength(data = invoiceData)
     }
   };
 
