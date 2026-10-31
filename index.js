@@ -204,10 +204,12 @@ function sendWlfTokenInfo(token, chatId) {
   let infoText = `🪙 **$WLF Token Ecosystem**\n\n`;
   infoText += `Welcome to the official **$WLF Token** hub! $WLF powers our gaming community initiatives and rewards active players.\n\n`;
   infoText += `📊 **Tokenomics & Security Highlights:**\n`;
-  infoText += `• **Total Supply:** 1,000,000,000 $WLF\n`;
-  infoText += `• **Liquidity Status:** 100% Locked on DeDust.io for maximum security! 🔒\n`;
+  infoText += `• **Total Supply:** 90,000,000 $WLF\n`;
+  infoText += `• **Liquidity Status:** ~20,000,000 $WLF 100% locked in DeDust.io liquidity pool (soon increasing to 27,000,000 $WLF). 🔒\n`;
+  infoText += `• **Community Allocation:** 5,000,000 $WLF allocated for community airdrops, mining, and rewards.\n`;
   infoText += `• **Network:** TON Blockchain\n\n`;
   infoText += `📌 **Contract Address:**\n\`EQAUEpGOGqbJy-UIxQ6qblhqAROxgDuiMeB17zImB90n6st0\`\n\n`;
+  infoText += `ℹ️ **More details and upcoming updates will be published soon!**\n\n`;
   infoText += `🛒 **How to Buy & Trade $WLF:**\n`;
   infoText += `1. Connect your TON Wallet (e.g., Tonkeeper) to DeDust.io.\n`;
   infoText += `2. Use the buttons below to swap or view the liquidity pool instantly!\n\n`;
