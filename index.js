@@ -268,7 +268,7 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
     family: 4,
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(deployDataLength = invoiceData.length)
+      'Content-Length': Buffer.byteLength(invoiceData)
     }
   };
 
