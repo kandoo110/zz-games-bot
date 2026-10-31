@@ -1,6 +1,8 @@
 const http = require('http');
 const https = require('https');
 
+const PORT = process.env.PORT || 10000;
+
 const server = http.createServer((req, res) => {
   // Health check endpoint for Render
   if (req.method === 'GET') {
@@ -68,7 +70,6 @@ const server = http.createServer((req, res) => {
 
           if (!chatId) return;
 
-          // Acknowledge callback query to stop loading animation on the button
           const answerData = JSON.stringify({
             callback_query_id: callbackQueryId,
             text: ""
@@ -86,7 +87,6 @@ const server = http.createServer((req, res) => {
           answerReq.write(answerData);
           answerReq.end();
 
-          // Route based on callback data
           if (callbackData === 'preview_f35') {
             sendGamePreview(BOT_TOKEN, chatId, 'f35');
           } else if (callbackData === 'preview_b2') {
@@ -127,7 +127,6 @@ const server = http.createServer((req, res) => {
   }
 });
 
-// Send main games menu list
 function sendGamesMenu(token, chatId) {
   const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game below to view details and unlock access:";
   const replyMarkup = {
@@ -141,7 +140,6 @@ function sendGamesMenu(token, chatId) {
   sendTelegramMessage(token, chatId, responseText, replyMarkup);
 }
 
-// Send rich game preview with photo and purchase options
 function sendGamePreview(token, chatId, gameType) {
   let photoUrl = "";
   let caption = "";
@@ -277,7 +275,6 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
   req.end();
 }
 
-const PORT = process.env.PORT || 10000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`ZZ Games Bot server running on port ${PORT}`);
 });
