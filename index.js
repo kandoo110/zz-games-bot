@@ -71,6 +71,9 @@ const server = http.createServer((req, res) => {
           } else if (payload === '20dzh_game_access') {
             gameUrl = "https://two0castles.onrender.com";
             gameName = "20 Dzh: Elements Battle";
+          } else if (payload === 'alphabet_game_access') {
+            gameUrl = "https://english-learning-pdc6.onrender.com";[span_2](start_span)[span_2](end_span)
+            gameName = "Magic Alphabet Cube";
           }
 
           sendTelegramMessage(BOT_TOKEN, chatId, `🎉 Congratulations! Payment verified successfully.\n\nTap below to launch your ${gameName}:`, {
@@ -113,6 +116,8 @@ const server = http.createServer((req, res) => {
             sendGamePreview(BOT_TOKEN, chatId, 'puzzle');
           } else if (callbackData === 'preview_20dzh') {
             sendGamePreview(BOT_TOKEN, chatId, '20dzh');
+          } else if (callbackData === 'preview_alphabet') {
+            sendGamePreview(BOT_TOKEN, chatId, 'alphabet');
           } else if (callbackData === 'invite_menu') {
             sendInviteStatus(BOT_TOKEN, chatId);
           } else if (callbackData === 'wlf_token_info') {
@@ -129,6 +134,8 @@ const server = http.createServer((req, res) => {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'Castle Puzzle Game', 'puzzle_game_access', 15);
           } else if (callbackData === 'buy_20dzh') {
             sendTelegramInvoice(BOT_TOKEN, chatId, '20 Dzh: Elements Battle', '20dzh_game_access', 35);
+          } else if (callbackData === 'buy_alphabet') {
+            sendTelegramInvoice(BOT_TOKEN, chatId, 'Magic Alphabet Cube', 'alphabet_game_access', 10);
           }
           return;
         }
@@ -188,6 +195,7 @@ function sendGamesMenu(token, chatId) {
   const replyMarkup = {
     inline_keyboard: [
       [{ text: "🧊 Stack 3D (Free Game)", web_app: { url: "https://zzgames-stack3d.onrender.com" } }],
+      [{ text: "🔤 Magic Alphabet Cube (10 Stars)", callback_data: "preview_alphabet" }],
       [{ text: "🏰 Castle Puzzle: Save Princess (Stages 1-30 Free)", callback_data: "preview_puzzle" }],
       [{ text: "🛡️ 20 Dzh: Elements Strategy (Stages 1-12 Free)", callback_data: "preview_20dzh" }],
       [{ text: "🚀 F-35 Fighter Jet (30 Stars)", callback_data: "preview_f35" }],
@@ -296,6 +304,13 @@ function sendGamePreview(token, chatId, gameType) {
     caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ Strategic four elements puzzle campaign & castle defense\n📌 **Stages 1 to 12 are completely FREE!** (Stages 13-20 require 35 Stars inside the game)\n\n🎮 Tap below to launch and play now!";
     replyMarkupButtons = [
       [{ text: "🚀 Launch Game (Free / Fullscreen)", web_app: { url: "https://two0castles.onrender.com" } }],
+      [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
+    ];
+  } else if (gameType === 'alphabet') {
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";[span_3](start_span)[span_3](end_span)
+    caption = "🔤 **Magic Alphabet Cube (English Learning)**\n\n✨ Interactive 3D alphabet cubes with 260 words, audio pronunciation & good deeds mini-tasks!\n\n💎 **Permanent Access:** 10 Telegram Stars";
+    replyMarkupButtons = [
+      [{ text: "💳 Pay 10 Stars & Unlock", callback_data: "buy_alphabet" }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   }
