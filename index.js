@@ -52,7 +52,8 @@ const server = http.createServer((req, res) => {
 
           sendTelegramMessage(BOT_TOKEN, chatId, `🎉 Congratulations! Payment verified successfully.\n\nTap the button below to launch your ${gameName}:`, {
             inline_keyboard: [
-              [{ text: `🚀 Launch ${gameName} (Fullscreen)`, web_app: { url: gameUrl } }]
+              [{ text: `🚀 Launch ${gameName} (Fullscreen)`, web_app: { url: gameUrl } }],
+              [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
             ]
           });
           return;
@@ -97,6 +98,10 @@ const server = http.createServer((req, res) => {
           } else if (callbackData === 'preview_20dzh') {
             sendGamePreview(BOT_TOKEN, chatId, '20dzh');
           } 
+          // Back to menu handler
+          else if (callbackData === 'back_to_menu') {
+            sendGamesMenu(BOT_TOKEN, chatId);
+          }
           // Purchase / Invoice handlers
           else if (callbackData === 'buy_f35') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'F-35 Fighter Jet', 'f35_game_access', 50);
@@ -112,16 +117,7 @@ const server = http.createServer((req, res) => {
 
         // 4. Handle /start or /games commands
         if (text.startsWith('/start') || text.startsWith('/games')) {
-          const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nExplore our collection below. Choose **20 Dzh** for strategic puzzle warfare or our elite action games:";
-          const replyMarkup = {
-            inline_keyboard: [
-              [{ text: "🛡️ 20 Dzh: Elements Strategy (35 Stars ⭐)", callback_data: "preview_20dzh" }],
-              [{ text: "🚀 F-35 Fighter Jet (50 Stars)", callback_data: "preview_f35" }],
-              [{ text: "🛩️ B-2 Bomber (50 Stars)", callback_data: "preview_b2" }],
-              [{ text: "🌌 Space War (50 Stars)", callback_data: "preview_space" }]
-            ]
-          };
-          sendTelegramMessage(BOT_TOKEN, chatId, responseText, replyMarkup);
+          sendGamesMenu(BOT_TOKEN, chatId);
         }
 
       } catch (err) {
@@ -131,41 +127,47 @@ const server = http.createServer((req, res) => {
   }
 });
 
+// Send main games menu list
+function sendGamesMenu(token, chatId) {
+  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game below to view details and unlock access:";
+  const replyMarkup = {
+    inline_keyboard: [
+      [{ text: "🛡️ 20 Dzh: Elements Strategy (35 Stars ⭐)", callback_data: "preview_20dzh" }],
+      [{ text: "🚀 F-35 Fighter Jet (50 Stars)", callback_data: "preview_f35" }],
+      [{ text: "🛩️ B-2 Bomber (50 Stars)", callback_data: "preview_b2" }],
+      [{ text: "🌌 Space War (50 Stars)", callback_data: "preview_space" }]
+    ]
+  };
+  sendTelegramMessage(token, chatId, responseText, replyMarkup);
+}
+
 // Send rich game preview with photo and purchase options
 function sendGamePreview(token, chatId, gameType) {
   let photoUrl = "";
   let caption = "";
   let buyCallback = "";
+  let starsAmount = 50;
 
   if (gameType === 'f35') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-f35/main/f35.jpg";
-    caption = "🎮 **F-35 Lightning II Air Combat**\n\n" +
-              "✨ High-performance atmospheric dogfight experience\n" +
-              "🎯 Advanced scoring & fluid arcade controls\n\n" +
-              "💎 **Permanent Access:** 50 Telegram Stars";
+    caption = "🎮 **F-35 Lightning II Air Combat**\n\n✨ High-performance atmospheric dogfight experience\n🎯 Advanced scoring & fluid arcade controls\n\n💎 **Permanent Access:** 50 Telegram Stars";
     buyCallback = "buy_f35";
+    starsAmount = 50;
   } else if (gameType === 'b2') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-b-2/main/b2.jpg";
-    caption = "🛩️ **B-2 Bomber Stealth Mission**\n\n" +
-              "✨ Strategic precision bombing & tactical flight\n" +
-              "🎯 High-stakes defensive operations\n\n" +
-              "💎 **Permanent Access:** 50 Telegram Stars";
+    caption = "🛩️ **B-2 Bomber Stealth Mission**\n\n✨ Strategic precision bombing & tactical flight\n🎯 High-stakes defensive operations\n\n💎 **Permanent Access:** 50 Telegram Stars";
     buyCallback = "buy_b2";
+    starsAmount = 50;
   } else if (gameType === 'space') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-space-war/main/space.jpg";
-    caption = "🌌 **Space War Galaxy**\n\n" +
-              "✨ Epic galactic arcade shooter & cosmic combat\n" +
-              "🎯 Endless waves of interstellar enemies\n\n" +
-              "💎 **Permanent Access:** 50 Telegram Stars";
+    caption = "🌌 **Space War Galaxy**\n\n✨ Epic galactic arcade shooter & cosmic combat\n🎯 Endless waves of interstellar enemies\n\n💎 **Permanent Access:** 50 Telegram Stars";
     buyCallback = "buy_space";
+    starsAmount = 50;
   } else if (gameType === '20dzh') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-20castles/main/20castles.jpg";
-    // توجه: اگر نام ریپوزیتوری گیت‌هاب شما 20castles است، لینک عکس به شکل بالا خواهد بود. اگر نام دیگری دارد، مسیر raw آن را اینجا قرار دهید.
-    caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n" +
-              "✨ Strategic four elements puzzle campaign & castle defense\n" +
-              "🎯 20 challenging stages to save love and break spells\n\n" +
-              "💎 **Permanent Access (Stages 13-20):** 35 Telegram Stars ⭐";
+    caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ Strategic four elements puzzle campaign & castle defense\n🎯 20 challenging stages to save love and break spells\n\n💎 **Permanent Access (Stages 13-20):** 35 Telegram Stars ⭐";
     buyCallback = "buy_20dzh";
+    starsAmount = 35;
   }
 
   const postData = JSON.stringify({
@@ -175,7 +177,8 @@ function sendGamePreview(token, chatId, gameType) {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [
-        [{ text: `💳 Pay ${gameType === '20dzh' ? '35' : '50'} Stars & Unlock`, callback_data: buyCallback }]
+        [{ text: `💳 Pay ${starsAmount} Stars & Unlock`, callback_data: buyCallback }],
+        [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
       ]
     }
   });
@@ -265,7 +268,7 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
     family: 4,
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(invoiceData)
+      'Content-Length': Buffer.byteLength(deployDataLength = invoiceData.length)
     }
   };
 
