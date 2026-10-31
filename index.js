@@ -187,6 +187,7 @@ function sendGamesMenu(token, chatId) {
   const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game to play, unlock rewards, or launch the $WLF Mining App:";
   const replyMarkup = {
     inline_keyboard: [
+      [{ text: "🧊 Stack 3D (Free Game)", web_app: { url: "https://zzgames-stack3d.onrender.com" } }],
       [{ text: "🏰 Castle Puzzle: Save Princess (Stages 1-30 Free)", callback_data: "preview_puzzle" }],
       [{ text: "🛡️ 20 Dzh: Elements Strategy (Stages 1-12 Free)", callback_data: "preview_20dzh" }],
       [{ text: "🚀 F-35 Fighter Jet (30 Stars)", callback_data: "preview_f35" }],
@@ -243,7 +244,7 @@ function sendInviteStatus(token, chatId) {
     sendTelegramMessage(token, chatId, statusText, {
       inline_keyboard: [
         [{ text: `🚀 Launch ${reward.name}`, web_app: { url: reward.url } }],
-        [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
+        [{ text: "🏠 Back to Menu", callback_data: "back_to_menu" }]
       ]
     });
   } else {
