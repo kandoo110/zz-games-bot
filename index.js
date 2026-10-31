@@ -44,7 +44,7 @@ const server = http.createServer((req, res) => {
             gameUrl = "https://zzgames-space-war.onrender.com";
             gameName = "Space War Game";
           } else if (payload === '20dzh_game_access') {
-            gameUrl = "https://two0castles.onrender.com";[span_1](start_span)[span_1](end_span)
+            gameUrl = "https://two0castles.onrender.com";[span_0](start_span)[span_0](end_span)
             gameName = "20 Dzh: Elements Battle";
           }
 
@@ -164,7 +164,7 @@ function sendGamePreview(token, chatId, gameType) {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/20castles/main/20castles.jpg";
     caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ Strategic four elements puzzle campaign & castle defense\n📌 **Stages 1 to 12 are completely FREE!** (Stages 13-20 require 35 Stars inside the game)\n\n🎮 Tap below to launch and play now!";
     replyMarkupButtons = [
-      [{ text: "🚀 Launch Game (Free / Fullscreen)", web_app: { url: "https://two0castles.onrender.com" } }],[span_2](start_span)[span_2](end_span)
+      [{ text: "🚀 Launch Game (Free / Fullscreen)", web_app: { url: "https://two0castles.onrender.com" } }],[span_1](start_span)[span_1](end_span)
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   }
