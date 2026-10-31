@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
             gameUrl = "https://two0castles.onrender.com";
             gameName = "20 Dzh: Elements Battle";
           } else if (payload === 'alphabet_game_access') {
-            gameUrl = "https://english-learning-pdc6.onrender.com";[span_2](start_span)[span_2](end_span)
+            gameUrl = "https://english-learning-pdc6.onrender.com"; // اصلاح شد به لینک درست رندر
             gameName = "Magic Alphabet Cube";
           }
 
@@ -307,7 +307,7 @@ function sendGamePreview(token, chatId, gameType) {
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'alphabet') {
-    photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";[span_3](start_span)[span_3](end_span)
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";
     caption = "🔤 **Magic Alphabet Cube (English Learning)**\n\n✨ Interactive 3D alphabet cubes with 260 words, audio pronunciation & good deeds mini-tasks!\n\n💎 **Permanent Access:** 10 Telegram Stars";
     replyMarkupButtons = [
       [{ text: "💳 Pay 10 Stars & Unlock", callback_data: "buy_alphabet" }],
