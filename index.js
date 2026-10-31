@@ -59,21 +59,19 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        const callbackQuery = update.callback_query;
-        const message = update.message;
+        // 3. Handle Callback Queries (Inline Button Clicks)
+        if (update.callback_query) {
+          const callbackQuery = update.callback_query;
+          const callbackQueryId = callbackQuery.id;
+          const chatId = callbackQuery.message?.chat?.id;
+          const callbackData = callbackQuery.data;
 
-        const chatId = message?.chat?.id || callbackQuery?.message?.chat?.id;
-        const text = message?.text || '';
-        const callbackData = callbackQuery?.data;
-        const callbackQueryId = callbackQuery?.id;
+          if (!chatId) return;
 
-        if (!chatId) return;
-
-        // 3. Handle Inline Button Clicks & Previews
-        if (callbackQueryId) {
+          // Acknowledge callback query to stop loading animation on the button
           const answerData = JSON.stringify({
             callback_query_id: callbackQueryId,
-            text: "Loading..."
+            text: ""
           });
 
           const answerReq = https.request({
@@ -88,7 +86,7 @@ const server = http.createServer((req, res) => {
           answerReq.write(answerData);
           answerReq.end();
 
-          // Preview handlers
+          // Route based on callback data
           if (callbackData === 'preview_f35') {
             sendGamePreview(BOT_TOKEN, chatId, 'f35');
           } else if (callbackData === 'preview_b2') {
@@ -97,13 +95,9 @@ const server = http.createServer((req, res) => {
             sendGamePreview(BOT_TOKEN, chatId, 'space');
           } else if (callbackData === 'preview_20dzh') {
             sendGamePreview(BOT_TOKEN, chatId, '20dzh');
-          } 
-          // Back to menu handler
-          else if (callbackData === 'back_to_menu') {
+          } else if (callbackData === 'back_to_menu') {
             sendGamesMenu(BOT_TOKEN, chatId);
-          }
-          // Purchase / Invoice handlers
-          else if (callbackData === 'buy_f35') {
+          } else if (callbackData === 'buy_f35') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'F-35 Fighter Jet', 'f35_game_access', 50);
           } else if (callbackData === 'buy_b2') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'B-2 Bomber', 'b2_game_access', 50);
@@ -115,9 +109,15 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        // 4. Handle /start or /games commands
-        if (text.startsWith('/start') || text.startsWith('/games')) {
-          sendGamesMenu(BOT_TOKEN, chatId);
+        // 4. Handle Text Commands (/start or /games)
+        if (update.message) {
+          const message = update.message;
+          const chatId = message.chat.id;
+          const text = message.text || '';
+
+          if (text.startsWith('/start') || text.startsWith('/games')) {
+            sendGamesMenu(BOT_TOKEN, chatId);
+          }
         }
 
       } catch (err) {
