@@ -1,7 +1,30 @@
 const http = require('http');
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
 const PORT = process.env.PORT || 10000;
+const DB_FILE = path.join(__dirname, 'storage.json');
+
+// Helper to load/save referral data
+function loadDB() {
+  try {
+    if (fs.existsSync(DB_FILE)) {
+      return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+    }
+  } catch (e) {
+    console.error("Error reading DB:", e);
+  }
+  return { users: {}, referrals: {}, unlocked: {} };
+}
+
+function saveDB(data) {
+  try {
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.error("Error writing DB:", e);
+  }
+}
 
 const server = http.createServer((req, res) => {
   if (req.method === 'GET') {
@@ -90,6 +113,8 @@ const server = http.createServer((req, res) => {
             sendGamePreview(BOT_TOKEN, chatId, 'space');
           } else if (callbackData === 'preview_20dzh') {
             sendGamePreview(BOT_TOKEN, chatId, '20dzh');
+          } else if (callbackData === 'invite_menu') {
+            sendInviteStatus(BOT_TOKEN, chatId);
           } else if (callbackData === 'back_to_menu') {
             sendGamesMenu(BOT_TOKEN, chatId);
           } else if (callbackData === 'buy_f35') {
@@ -108,8 +133,45 @@ const server = http.createServer((req, res) => {
           const message = update.message;
           const chatId = message.chat.id;
           const text = message.text || '';
+          const db = loadDB();
 
-          if (text.startsWith('/start') || text.startsWith('/games')) {
+          // Handle /start with referral check
+          if (text.startsWith('/start')) {
+            const parts = text.split(' ');
+            if (parts.length > 1 && parts[1].startsWith('ref_')) {
+              const referrerId = parts[1].replace('ref_', '');
+              if (referrerId !== chatId.toString()) {
+                if (!db.referrals[referrerId]) {
+                  db.referrals[referrerId] = [];
+                }
+                // Check if this user was already referred
+                if (!db.referrals[referrerId].includes(chatId.toString())) {
+                  db.referrals[referrerId].push(chatId.toString());
+                  
+                  // Check if reached 4 referrals and no reward given yet
+                  if (db.referrals[referrerId].length >= 4 && !db.unlocked[referrerId]) {
+                    const games = [
+                      { name: "F-35 Fighter Jet", url: "https://zzgames-f35.onrender.com" },
+                      { name: "B-2 Bomber", url: "https://zzgames-b-2.onrender.com" },
+                      { name: "Space War", url: "https://zzgames-space-war.onrender.com" }
+                    ];
+                    const randomGame = games[Math.floor(Math.random() * games.length)];
+                    db.unlocked[referrerId] = randomGame;
+
+                    // Notify referrer about the free game reward!
+                    sendTelegramMessage(BOT_TOKEN, referrerId, `🎁 **Congratulations!** You have successfully invited 4 friends!\n\nAs a reward, the **${randomGame.name}** game has been unlocked for you completely FREE! 🚀`, {
+                      inline_keyboard: [
+                        [{ text: `🚀 Launch ${randomGame.name} (Free)`, web_app: { url: randomGame.url } }],
+                        [{ text: "🏠 Back to Menu", callback_data: "back_to_menu" }]
+                      ]
+                    });
+                  }
+                  saveDB(db);
+                }
+              }
+            }
+            sendGamesMenu(BOT_TOKEN, chatId);
+          } else if (text.startsWith('/games')) {
             sendGamesMenu(BOT_TOKEN, chatId);
           }
         }
@@ -122,16 +184,48 @@ const server = http.createServer((req, res) => {
 });
 
 function sendGamesMenu(token, chatId) {
-  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game below to view details and unlock access:";
+  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game below to view details, unlock access, or invite friends to get a free game:";
   const replyMarkup = {
     inline_keyboard: [
       [{ text: "🛡️ 20 Dzh: Elements Strategy (Stages 1-12 Free)", callback_data: "preview_20dzh" }],
       [{ text: "🚀 F-35 Fighter Jet (50 Stars)", callback_data: "preview_f35" }],
       [{ text: "🛩️ B-2 Bomber (50 Stars)", callback_data: "preview_b2" }],
-      [{ text: "🌌 Space War (50 Stars)", callback_data: "preview_space" }]
+      [{ text: "🌌 Space War (50 Stars)", callback_data: "preview_space" }],
+      [{ text: "🎁 Invite 4 Friends & Get a Free Game!", callback_data: "invite_menu" }]
     ]
   };
   sendTelegramMessage(token, chatId, responseText, replyMarkup);
+}
+
+function sendInviteStatus(token, chatId) {
+  const db = loadDB();
+  const invitedList = db.referrals[chatId] || [];
+  const count = invitedList.length;
+  const reward = db.unlocked[chatId];
+
+  // Get Bot username dynamically or via standard format
+  const botUsername = "zz_games_bot"; // اگر نام کاربری ربات شما چیز دیگریست می‌توانید اینجا تغییر دهید
+
+  let statusText = `🎁 **Invite Friends & Win Free Games!**\n\n`;
+  statusText += `Invite 4 of your friends to this platform using your exclusive link. Once 4 friends join, **one of the games will be unlocked for you completely FREE (randomly)**!\n\n`;
+  statusText += `📊 **Your Progress:** ${count} / 4 friends invited.\n\n`;
+
+  if (reward) {
+    statusText += `🎉 **Your Reward Unlocked:** ${reward.name} is yours for FREE! Tap below to play:`;
+    sendTelegramMessage(token, chatId, statusText, {
+      inline_keyboard: [
+        [{ text: `🚀 Launch ${reward.name}`, web_app: { url: reward.url } }],
+        [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
+      ]
+    });
+  } else {
+    statusText += `🔗 **Your Exclusive Invite Link:**\n\`https://t.me/${botUsername}?start=ref_${chatId}\`\n\n*(Tap the link above to copy, and share it with your friends!)*`;
+    sendTelegramMessage(token, chatId, statusText, {
+      inline_keyboard: [
+        [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
+      ]
+    });
+  }
 }
 
 function sendGamePreview(token, chatId, gameType) {
@@ -200,7 +294,7 @@ function sendGamePreview(token, chatId, gameType) {
 function answerPreCheckoutQuery(token, preCheckoutQueryId) {
   const data = JSON.stringify({
     pre_checkout_query_id: preCheckoutQueryId,
-    ok: type = true
+    ok: true
   });
 
   const options = {
