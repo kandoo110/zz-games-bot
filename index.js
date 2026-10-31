@@ -48,10 +48,10 @@ const server = http.createServer((req, res) => {
             gameName = "20 Dzh: Elements Battle";
           }
 
-          sendTelegramMessage(BOT_TOKEN, chatId, `🎉 Congratulations! Payment verified successfully.\n\nTap the button below to launch your ${gameName}:`, {
+          sendTelegramMessage(BOT_TOKEN, chatId, `🎉 تبریک! پرداخت با موفقیت تایید شد.\n\nبرای ورود به بازی روی دکمه زیر بزنید:`, {
             inline_keyboard: [
-              [{ text: `🚀 Launch ${gameName} (Fullscreen)`, web_app: { url: gameUrl } }],
-              [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
+              [{ text: `🚀 ورود به ${gameName} (تمام‌صفحه)`, web_app: { url: gameUrl } }],
+              [{ text: "🏠 بازگشت به منوی بازی‌ها", callback_data: "back_to_menu" }]
             ]
           });
           return;
@@ -122,10 +122,10 @@ const server = http.createServer((req, res) => {
 });
 
 function sendGamesMenu(token, chatId) {
-  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game below to view details and unlock access:";
+  const responseText = "به پلتفرم بازی‌های **ZZ Games** خوش آمدید! 🎮🔥\n\nبرای مشاهده جزئیات و شروع بازی، یکی از گزینه‌های زیر را انتخاب کنید:";
   const replyMarkup = {
     inline_keyboard: [
-      [{ text: "🛡️ 20 Dzh: Elements Strategy (35 Stars ⭐)", callback_data: "preview_20dzh" }],
+      [{ text: "🛡️ 20 Dzh: Elements Strategy (مراحل ۱ تا ۱۲ رایگان)", callback_data: "preview_20dzh" }],
       [{ text: "🚀 F-35 Fighter Jet (50 Stars)", callback_data: "preview_f35" }],
       [{ text: "🛩️ B-2 Bomber (50 Stars)", callback_data: "preview_b2" }],
       [{ text: "🌌 Space War (50 Stars)", callback_data: "preview_space" }]
@@ -137,29 +137,36 @@ function sendGamesMenu(token, chatId) {
 function sendGamePreview(token, chatId, gameType) {
   let photoUrl = "";
   let caption = "";
-  let buyCallback = "";
-  let starsAmount = 50;
+  let replyMarkupButtons = [];
 
   if (gameType === 'f35') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-f35/main/f35.jpg";
-    caption = "🎮 **F-35 Lightning II Air Combat**\n\n✨ High-performance atmospheric dogfight experience\n🎯 Advanced scoring & fluid arcade controls\n\n💎 **Permanent Access:** 50 Telegram Stars";
-    buyCallback = "buy_f35";
-    starsAmount = 50;
+    caption = "🎮 **F-35 Lightning II Air Combat**\n\n✨ تجربه نبرد هوایی جذاب و اکشن\n\n💎 **دسترسی دائم:** ۵۰ ستاره تلگرام";
+    replyMarkupButtons = [
+      [{ text: "💳 پرداخت ۵۰ ستاره و آنلاک", callback_data: "buy_f35" }],
+      [{ text: "🔙 بازگشت به منوی بازی‌ها", callback_data: "back_to_menu" }]
+    ];
   } else if (gameType === 'b2') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-B-2/main/B-2.jpg";
-    caption = "🛩️ **B-2 Bomber Stealth Mission**\n\n✨ Strategic precision bombing & tactical flight\n🎯 High-stakes defensive operations\n\n💎 **Permanent Access:** 50 Telegram Stars";
-    buyCallback = "buy_b2";
-    starsAmount = 50;
+    caption = "🛩️ **B-2 Bomber Stealth Mission**\n\n✨ ماموریت بمب‌افکن استراتژیک\n\n💎 **دسترسی دائم:** ۵۰ ستاره تلگرام";
+    replyMarkupButtons = [
+      [{ text: "💳 پرداخت ۵۰ ستاره و آنلاک", callback_data: "buy_b2" }],
+      [{ text: "🔙 بازگشت به منوی بازی‌ها", callback_data: "back_to_menu" }]
+    ];
   } else if (gameType === 'space') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-space-war/main/space-war.jpg";
-    caption = "🌌 **Space War Galaxy**\n\n✨ Epic galactic arcade shooter & cosmic combat\n🎯 Endless waves of interstellar enemies\n\n💎 **Permanent Access:** 50 Telegram Stars";
-    buyCallback = "buy_space";
-    starsAmount = 50;
+    caption = "🌌 **Space War Galaxy**\n\n✨ نبرد کهکشانی و آرکید فضایی\n\n💎 **دسترسی دائم:** ۵۰ ستاره تلگرام";
+    replyMarkupButtons = [
+      [{ text: "💳 پرداخت ۵۰ ستاره و آنلاک", callback_data: "buy_space" }],
+      [{ text: "🔙 بازگشت به منوی بازی‌ها", callback_data: "back_to_menu" }]
+    ];
   } else if (gameType === '20dzh') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/20castles/main/20castles.jpg";
-    caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ Strategic four elements puzzle campaign & castle defense\n🎯 20 challenging stages to save love and break spells\n\n💎 **Permanent Access (Stages 13-20):** 35 Telegram Stars ⭐";
-    buyCallback = "buy_20dzh";
-    starsAmount = 35;
+    caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ نبرد چهار عنصر، حل پازل‌ها و نجات عشق\n📌 **مراحل ۱ تا ۱۲ کاملاً رایگان!** (مراحل ۱۳ تا ۲۰ نیاز به ۳۵ ستاره در داخل بازی دارند)\n\n🎮 همین الان بدون پرداخت وارد شو و بازی رو شروع کن!";
+    replyMarkupButtons = [
+      [{ text: "🚀 شروع بازی (رایگان / ورود به سایت)", web_app: { url: "https://20castles.onrender.com" } }],
+      [{ text: "🔙 بازگشت به منوی بازی‌ها", callback_data: "back_to_menu" }]
+    ];
   }
 
   const postData = JSON.stringify({
@@ -168,10 +175,7 @@ function sendGamePreview(token, chatId, gameType) {
     caption: caption,
     parse_mode: "Markdown",
     reply_markup: {
-      inline_keyboard: [
-        [{ text: `💳 Pay ${starsAmount} Stars & Unlock`, callback_data: buyCallback }],
-        [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
-      ]
+      inline_keyboard: replyMarkupButtons
     }
   });
 
