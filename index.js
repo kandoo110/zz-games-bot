@@ -198,15 +198,17 @@ function sendWlfTokenInfo(token, chatId) {
   infoText += `• **Total Supply:** 1,000,000,000 $WLF\n`;
   infoText += `• **Liquidity Status:** 100% Locked on DeDust.io for maximum security! 🔒\n`;
   infoText += `• **Network:** TON Blockchain\n\n`;
+  infoText += `📌 **Contract Address:**\n\`EQAUEpGOGqbJy-UIxQ6qblhqAROxgDuiMeB17zImB90n6st0\`\n\n`;
   infoText += `🛒 **How to Buy & Trade $WLF:**\n`;
   infoText += `1. Connect your TON Wallet (e.g., Tonkeeper) to DeDust.io.\n`;
-  infoText += `2. Swap TON for **$WLF** instantly.\n\n`;
-  infoText += `👇 Click below to trade or launch the mining app:`;
+  infoText += `2. Use the buttons below to swap or view the liquidity pool instantly!\n\n`;
+  infoText += `👇 Choose an option below:`;
 
   const replyMarkup = {
     inline_keyboard: [
+      [{ text: "💱 Swap / Trade on DeDust.io", url: "https://dedust.io/swap/EQAUEpGOGqbJy-UIxQ6qblhqAROxgDuiMeB17zImB90n6st0/DUST" }],
+      [{ text: "💧 View Liquidity Pool", url: "https://dedust.io/pools/EQC-M-HKtgd0kQ8pyQqn_tQXeV376KS-5lhuelzlzUWWhdQu" }],
       [{ text: "⛏️ Open $WLF Mining App", web_app: { url: "https://wlf-p1zk.onrender.com" } }],
-      [{ text: "📈 Trade on DeDust.io", url: "https://dedust.io" }],
       [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
     ]
   };
