@@ -65,6 +65,9 @@ const server = http.createServer((req, res) => {
           } else if (payload === 'space_game_access') {
             gameUrl = "https://zzgames-space-war.onrender.com";
             gameName = "Space War Game";
+          } else if (payload === 'puzzle_game_access') {
+            gameUrl = "https://zz-games-puzzle.onrender.com";
+            gameName = "Castle Puzzle Game";
           } else if (payload === '20dzh_game_access') {
             gameUrl = "https://two0castles.onrender.com";
             gameName = "20 Dzh: Elements Battle";
@@ -106,6 +109,8 @@ const server = http.createServer((req, res) => {
             sendGamePreview(BOT_TOKEN, chatId, 'b2');
           } else if (callbackData === 'preview_space') {
             sendGamePreview(BOT_TOKEN, chatId, 'space');
+          } else if (callbackData === 'preview_puzzle') {
+            sendGamePreview(BOT_TOKEN, chatId, 'puzzle');
           } else if (callbackData === 'preview_20dzh') {
             sendGamePreview(BOT_TOKEN, chatId, '20dzh');
           } else if (callbackData === 'invite_menu') {
@@ -120,6 +125,8 @@ const server = http.createServer((req, res) => {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'B-2 Bomber', 'b2_game_access', 50);
           } else if (callbackData === 'buy_space') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'Space War', 'space_game_access', 50);
+          } else if (callbackData === 'buy_puzzle') {
+            sendTelegramInvoice(BOT_TOKEN, chatId, 'Castle Puzzle Game', 'puzzle_game_access', 30);
           } else if (callbackData === 'buy_20dzh') {
             sendTelegramInvoice(BOT_TOKEN, chatId, '20 Dzh: Elements Battle', '20dzh_game_access', 35);
           }
@@ -146,7 +153,8 @@ const server = http.createServer((req, res) => {
                     const games = [
                       { name: "F-35 Fighter Jet", url: "https://zzgames-f35.onrender.com" },
                       { name: "B-2 Bomber", url: "https://zzgames-b-2.onrender.com" },
-                      { name: "Space War", url: "https://zzgames-space-war.onrender.com" }
+                      { name: "Space War", url: "https://zzgames-space-war.onrender.com" },
+                      { name: "Castle Puzzle Game", url: "https://zz-games-puzzle.onrender.com" }
                     ];
                     const randomGame = games[Math.floor(Math.random() * games.length)];
                     db.unlocked[referrerId] = randomGame;
@@ -179,6 +187,7 @@ function sendGamesMenu(token, chatId) {
   const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game to play, unlock rewards, or launch the $WLF Mining App:";
   const replyMarkup = {
     inline_keyboard: [
+      [{ text: "🏰 Castle Puzzle: Save Princess (Stages 1-30 Free)", callback_data: "preview_puzzle" }],
       [{ text: "🛡️ 20 Dzh: Elements Strategy (Stages 1-12 Free)", callback_data: "preview_20dzh" }],
       [{ text: "🚀 F-35 Fighter Jet (50 Stars)", callback_data: "preview_f35" }],
       [{ text: "🛩️ B-2 Bomber (50 Stars)", callback_data: "preview_b2" }],
@@ -269,6 +278,14 @@ function sendGamePreview(token, chatId, gameType) {
     caption = "🌌 **Space War Galaxy**\n\n✨ Epic galactic arcade shooter & cosmic combat\n🎯 Endless waves of interstellar enemies\n\n💎 **Permanent Access:** 50 Telegram Stars";
     replyMarkupButtons = [
       [{ text: "💳 Pay 50 Stars & Unlock", callback_data: "buy_space" }],
+      [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
+    ];
+  } else if (gameType === 'puzzle') {
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/zz-games-puzzle/main/puzzle.jpg";
+    caption = "🏰 **Castle Puzzle: Save Princess**\n\n✨ Strategic puzzle campaign across 40 castles\n📌 **Stages 1 to 30 are completely FREE!** (Stages 31-40 require 30 Telegram Stars)\n\n🎮 Tap below to launch and play now!";
+    replyMarkupButtons = [
+      [{ text: "🚀 Launch Game (Free / Fullscreen)", web_app: { url: "https://zz-games-puzzle.onrender.com" } }],
+      [{ text: "💳 Unlock VIP (30 Stars)", callback_data: "buy_puzzle" }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === '20dzh') {
