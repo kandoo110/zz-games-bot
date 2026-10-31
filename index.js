@@ -4,14 +4,12 @@ const https = require('https');
 const PORT = process.env.PORT || 10000;
 
 const server = http.createServer((req, res) => {
-  // Health check endpoint for Render
   if (req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'online', platform: 'ZZ Games Bot' }));
     return;
   }
 
-  // Handle Telegram Webhook POST requests
   if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {
@@ -27,13 +25,11 @@ const server = http.createServer((req, res) => {
         const BOT_TOKEN = process.env.BOT_TOKEN;
         if (!BOT_TOKEN) return;
 
-        // 1. Handle Telegram Star Pre-Checkout Query
         if (update.pre_checkout_query) {
           answerPreCheckoutQuery(BOT_TOKEN, update.pre_checkout_query.id);
           return;
         }
 
-        // 2. Handle Successful Payment & Deliver Game Access
         if (update.message?.successful_payment) {
           const chatId = update.message.chat.id;
           const payload = update.message.successful_payment.invoice_payload;
@@ -61,7 +57,6 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        // 3. Handle Callback Queries (Inline Button Clicks)
         if (update.callback_query) {
           const callbackQuery = update.callback_query;
           const callbackQueryId = callbackQuery.id;
@@ -109,7 +104,6 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        // 4. Handle Text Commands (/start or /games)
         if (update.message) {
           const message = update.message;
           const chatId = message.chat.id;
@@ -152,17 +146,17 @@ function sendGamePreview(token, chatId, gameType) {
     buyCallback = "buy_f35";
     starsAmount = 50;
   } else if (gameType === 'b2') {
-    photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-b-2/main/b2.jpg";
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-B-2/main/B-2.jpg";
     caption = "🛩️ **B-2 Bomber Stealth Mission**\n\n✨ Strategic precision bombing & tactical flight\n🎯 High-stakes defensive operations\n\n💎 **Permanent Access:** 50 Telegram Stars";
     buyCallback = "buy_b2";
     starsAmount = 50;
   } else if (gameType === 'space') {
-    photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-space-war/main/space.jpg";
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-space-war/main/space-war.jpg";
     caption = "🌌 **Space War Galaxy**\n\n✨ Epic galactic arcade shooter & cosmic combat\n🎯 Endless waves of interstellar enemies\n\n💎 **Permanent Access:** 50 Telegram Stars";
     buyCallback = "buy_space";
     starsAmount = 50;
   } else if (gameType === '20dzh') {
-    photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-20castles/main/20castles.jpg";
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/20castles/main/20castles.jpg";
     caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ Strategic four elements puzzle campaign & castle defense\n🎯 20 challenging stages to save love and break spells\n\n💎 **Permanent Access (Stages 13-20):** 35 Telegram Stars ⭐";
     buyCallback = "buy_20dzh";
     starsAmount = 35;
