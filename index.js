@@ -120,13 +120,13 @@ const server = http.createServer((req, res) => {
           } else if (callbackData === 'back_to_menu') {
             sendGamesMenu(BOT_TOKEN, chatId);
           } else if (callbackData === 'buy_f35') {
-            sendTelegramInvoice(BOT_TOKEN, chatId, 'F-35 Fighter Jet', 'f35_game_access', 50);
+            sendTelegramInvoice(BOT_TOKEN, chatId, 'F-35 Fighter Jet', 'f35_game_access', 30);
           } else if (callbackData === 'buy_b2') {
-            sendTelegramInvoice(BOT_TOKEN, chatId, 'B-2 Bomber', 'b2_game_access', 50);
+            sendTelegramInvoice(BOT_TOKEN, chatId, 'B-2 Bomber', 'b2_game_access', 30);
           } else if (callbackData === 'buy_space') {
-            sendTelegramInvoice(BOT_TOKEN, chatId, 'Space War', 'space_game_access', 50);
+            sendTelegramInvoice(BOT_TOKEN, chatId, 'Space War', 'space_game_access', 30);
           } else if (callbackData === 'buy_puzzle') {
-            sendTelegramInvoice(BOT_TOKEN, chatId, 'Castle Puzzle Game', 'puzzle_game_access', 30);
+            sendTelegramInvoice(BOT_TOKEN, chatId, 'Castle Puzzle Game', 'puzzle_game_access', 15);
           } else if (callbackData === 'buy_20dzh') {
             sendTelegramInvoice(BOT_TOKEN, chatId, '20 Dzh: Elements Battle', '20dzh_game_access', 35);
           }
@@ -189,9 +189,9 @@ function sendGamesMenu(token, chatId) {
     inline_keyboard: [
       [{ text: "🏰 Castle Puzzle: Save Princess (Stages 1-30 Free)", callback_data: "preview_puzzle" }],
       [{ text: "🛡️ 20 Dzh: Elements Strategy (Stages 1-12 Free)", callback_data: "preview_20dzh" }],
-      [{ text: "🚀 F-35 Fighter Jet (50 Stars)", callback_data: "preview_f35" }],
-      [{ text: "🛩️ B-2 Bomber (50 Stars)", callback_data: "preview_b2" }],
-      [{ text: "🌌 Space War (50 Stars)", callback_data: "preview_space" }],
+      [{ text: "🚀 F-35 Fighter Jet (30 Stars)", callback_data: "preview_f35" }],
+      [{ text: "🛩️ B-2 Bomber (30 Stars)", callback_data: "preview_b2" }],
+      [{ text: "🌌 Space War (30 Stars)", callback_data: "preview_space" }],
       [{ text: "⛏️ Launch $WLF Mining App", web_app: { url: "https://wlf-p1zk.onrender.com" } }],
       [{ text: "🎁 Invite 4 Friends & Get a Free Game!", callback_data: "invite_menu" }],
       [{ text: "🪙 $WLF Token Info & Trading", callback_data: "wlf_token_info" }]
@@ -263,31 +263,31 @@ function sendGamePreview(token, chatId, gameType) {
 
   if (gameType === 'f35') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-f35/main/f35.jpg";
-    caption = "🎮 **F-35 Lightning II Air Combat**\n\n✨ High-performance atmospheric dogfight experience\n🎯 Advanced scoring & fluid arcade controls\n\n💎 **Permanent Access:** 50 Telegram Stars";
+    caption = "🎮 **F-35 Lightning II Air Combat**\n\n✨ High-performance atmospheric dogfight experience\n🎯 Advanced scoring & fluid arcade controls\n\n💎 **Permanent Access:** 30 Telegram Stars";
     replyMarkupButtons = [
-      [{ text: "💳 Pay 50 Stars & Unlock", callback_data: "buy_f35" }],
+      [{ text: "💳 Pay 30 Stars & Unlock", callback_data: "buy_f35" }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'b2') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-B-2/main/B-2.jpg";
-    caption = "🛩️ **B-2 Bomber Stealth Mission**\n\n✨ Strategic precision bombing & tactical flight\n🎯 High-stakes defensive operations\n\n💎 **Permanent Access:** 50 Telegram Stars";
+    caption = "🛩️ **B-2 Bomber Stealth Mission**\n\n✨ Strategic precision bombing & tactical flight\n🎯 High-stakes defensive operations\n\n💎 **Permanent Access:** 30 Telegram Stars";
     replyMarkupButtons = [
-      [{ text: "💳 Pay 50 Stars & Unlock", callback_data: "buy_b2" }],
+      [{ text: "💳 Pay 30 Stars & Unlock", callback_data: "buy_b2" }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'space') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-space-war/main/space-war.jpg";
-    caption = "🌌 **Space War Galaxy**\n\n✨ Epic galactic arcade shooter & cosmic combat\n🎯 Endless waves of interstellar enemies\n\n💎 **Permanent Access:** 50 Telegram Stars";
+    caption = "🌌 **Space War Galaxy**\n\n✨ Epic galactic arcade shooter & cosmic combat\n🎯 Endless waves of interstellar enemies\n\n💎 **Permanent Access:** 30 Telegram Stars";
     replyMarkupButtons = [
-      [{ text: "💳 Pay 50 Stars & Unlock", callback_data: "buy_space" }],
+      [{ text: "💳 Pay 30 Stars & Unlock", callback_data: "buy_space" }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'puzzle') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zz-games-puzzle/main/puzzle.jpg";
-    caption = "🏰 **Castle Puzzle: Save Princess**\n\n✨ Strategic puzzle campaign across 40 castles\n📌 **Stages 1 to 30 are completely FREE!** (Stages 31-40 require 30 Telegram Stars)\n\n🎮 Tap below to launch and play now!";
+    caption = "🏰 **Castle Puzzle: Save Princess**\n\n✨ Strategic puzzle campaign across 40 castles\n📌 **Stages 1 to 30 are completely FREE!** (Stages 31-40 require 15 Telegram Stars)\n\n🎮 Tap below to launch and play now!";
     replyMarkupButtons = [
       [{ text: "🚀 Launch Game (Free / Fullscreen)", web_app: { url: "https://zz-games-puzzle.onrender.com" } }],
-      [{ text: "💳 Unlock VIP (30 Stars)", callback_data: "buy_puzzle" }],
+      [{ text: "💳 Unlock VIP (15 Stars)", callback_data: "buy_puzzle" }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === '20dzh') {
