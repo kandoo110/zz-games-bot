@@ -6,7 +6,6 @@ const path = require('path');
 const PORT = process.env.PORT || 10000;
 const DB_FILE = path.join(__dirname, 'storage.json');
 
-// Helper to load/save referral data
 function loadDB() {
   try {
     if (fs.existsSync(DB_FILE)) {
@@ -29,7 +28,7 @@ function saveDB(data) {
 const server = http.createServer((req, res) => {
   if (req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'online', platform: 'ZZ Games Bot' }));
+    res.end(JSON.stringify({ status: 'online', platform: 'ZZ Games Platform' }));
     return;
   }
 
@@ -71,7 +70,7 @@ const server = http.createServer((req, res) => {
             gameName = "20 Dzh: Elements Battle";
           }
 
-          sendTelegramMessage(BOT_TOKEN, chatId, `🎉 Congratulations! Payment verified successfully.\n\nTap the button below to launch your ${gameName}:`, {
+          sendTelegramMessage(BOT_TOKEN, chatId, `🎉 Congratulations! Payment verified successfully.\n\nTap below to launch your ${gameName}:`, {
             inline_keyboard: [
               [{ text: `🚀 Launch ${gameName} (Fullscreen)`, web_app: { url: gameUrl } }],
               [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
@@ -88,11 +87,7 @@ const server = http.createServer((req, res) => {
 
           if (!chatId) return;
 
-          const answerData = JSON.stringify({
-            callback_query_id: callbackQueryId,
-            text: ""
-          });
-
+          const answerData = JSON.stringify({ callback_query_id: callbackQueryId, text: "" });
           const answerReq = https.request({
             hostname: 'api.telegram.org',
             port: 443,
@@ -115,6 +110,8 @@ const server = http.createServer((req, res) => {
             sendGamePreview(BOT_TOKEN, chatId, '20dzh');
           } else if (callbackData === 'invite_menu') {
             sendInviteStatus(BOT_TOKEN, chatId);
+          } else if (callbackData === 'wlf_token_info') {
+            sendWlfTokenInfo(BOT_TOKEN, chatId);
           } else if (callbackData === 'back_to_menu') {
             sendGamesMenu(BOT_TOKEN, chatId);
           } else if (callbackData === 'buy_f35') {
@@ -135,20 +132,16 @@ const server = http.createServer((req, res) => {
           const text = message.text || '';
           const db = loadDB();
 
-          // Handle /start with referral check
           if (text.startsWith('/start')) {
             const parts = text.split(' ');
             if (parts.length > 1 && parts[1].startsWith('ref_')) {
               const referrerId = parts[1].replace('ref_', '');
               if (referrerId !== chatId.toString()) {
-                if (!db.referrals[referrerId]) {
-                  db.referrals[referrerId] = [];
-                }
-                // Check if this user was already referred
+                if (!db.referrals[referrerId]) db.referrals[referrerId] = [];
+                
                 if (!db.referrals[referrerId].includes(chatId.toString())) {
                   db.referrals[referrerId].push(chatId.toString());
                   
-                  // Check if reached 4 referrals and no reward given yet
                   if (db.referrals[referrerId].length >= 4 && !db.unlocked[referrerId]) {
                     const games = [
                       { name: "F-35 Fighter Jet", url: "https://zzgames-f35.onrender.com" },
@@ -158,8 +151,7 @@ const server = http.createServer((req, res) => {
                     const randomGame = games[Math.floor(Math.random() * games.length)];
                     db.unlocked[referrerId] = randomGame;
 
-                    // Notify referrer about the free game reward!
-                    sendTelegramMessage(BOT_TOKEN, referrerId, `🎁 **Congratulations!** You have successfully invited 4 friends!\n\nAs a reward, the **${randomGame.name}** game has been unlocked for you completely FREE! 🚀`, {
+                    sendTelegramMessage(BOT_TOKEN, referrerId, `🎁 **Congratulations!** You have invited 4 friends!\n\nAs a reward, **${randomGame.name}** is now UNLOCKED for you completely FREE! 🚀`, {
                       inline_keyboard: [
                         [{ text: `🚀 Launch ${randomGame.name} (Free)`, web_app: { url: randomGame.url } }],
                         [{ text: "🏠 Back to Menu", callback_data: "back_to_menu" }]
@@ -184,17 +176,42 @@ const server = http.createServer((req, res) => {
 });
 
 function sendGamesMenu(token, chatId) {
-  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game below to view details, unlock access, or invite friends to get a free game:";
+  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game to play, unlock rewards, or launch the $WLF Mining App:";
   const replyMarkup = {
     inline_keyboard: [
       [{ text: "🛡️ 20 Dzh: Elements Strategy (Stages 1-12 Free)", callback_data: "preview_20dzh" }],
       [{ text: "🚀 F-35 Fighter Jet (50 Stars)", callback_data: "preview_f35" }],
       [{ text: "🛩️ B-2 Bomber (50 Stars)", callback_data: "preview_b2" }],
       [{ text: "🌌 Space War (50 Stars)", callback_data: "preview_space" }],
-      [{ text: "🎁 Invite 4 Friends & Get a Free Game!", callback_data: "invite_menu" }]
+      [{ text: "⛏️ Launch $WLF Mining App", web_app: { url: "https://wlf-p1zk.onrender.com" } }],
+      [{ text: "🎁 Invite 4 Friends & Get a Free Game!", callback_data: "invite_menu" }],
+      [{ text: "🪙 $WLF Token Info & Trading", callback_data: "wlf_token_info" }]
     ]
   };
   sendTelegramMessage(token, chatId, responseText, replyMarkup);
+}
+
+function sendWlfTokenInfo(token, chatId) {
+  let infoText = `🪙 **$WLF Token Ecosystem**\n\n`;
+  infoText += `Welcome to the official **$WLF Token** hub! $WLF powers our gaming community initiatives and rewards active players.\n\n`;
+  infoText += `📊 **Tokenomics & Security Highlights:**\n`;
+  infoText += `• **Total Supply:** 1,000,000,000 $WLF\n`;
+  infoText += `• **Liquidity Status:** 100% Locked on DeDust.io for maximum security! 🔒\n`;
+  infoText += `• **Network:** TON Blockchain\n\n`;
+  infoText += `🛒 **How to Buy & Trade $WLF:**\n`;
+  infoText += `1. Connect your TON Wallet (e.g., Tonkeeper) to DeDust.io.\n`;
+  infoText += `2. Swap TON for **$WLF** instantly.\n\n`;
+  infoText += `👇 Click below to trade or launch the mining app:`;
+
+  const replyMarkup = {
+    inline_keyboard: [
+      [{ text: "⛏️ Open $WLF Mining App", web_app: { url: "https://wlf-p1zk.onrender.com" } }],
+      [{ text: "📈 Trade on DeDust.io", url: "https://dedust.io" }],
+      [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
+    ]
+  };
+
+  sendTelegramMessage(token, chatId, infoText, replyMarkup);
 }
 
 function sendInviteStatus(token, chatId) {
@@ -202,16 +219,14 @@ function sendInviteStatus(token, chatId) {
   const invitedList = db.referrals[chatId] || [];
   const count = invitedList.length;
   const reward = db.unlocked[chatId];
-
-  // Get Bot username dynamically or via standard format
-  const botUsername = "zz_games_bot"; // اگر نام کاربری ربات شما چیز دیگریست می‌توانید اینجا تغییر دهید
+  const botUsername = "zz_games_bot";
 
   let statusText = `🎁 **Invite Friends & Win Free Games!**\n\n`;
-  statusText += `Invite 4 of your friends to this platform using your exclusive link. Once 4 friends join, **one of the games will be unlocked for you completely FREE (randomly)**!\n\n`;
+  statusText += `Invite 4 friends using your link. Once 4 friends join, one paid game will be unlocked for you completely **FREE**!\n\n`;
   statusText += `📊 **Your Progress:** ${count} / 4 friends invited.\n\n`;
 
   if (reward) {
-    statusText += `🎉 **Your Reward Unlocked:** ${reward.name} is yours for FREE! Tap below to play:`;
+    statusText += `🎉 **Reward Unlocked:** ${reward.name} is yours for FREE! Tap below:`;
     sendTelegramMessage(token, chatId, statusText, {
       inline_keyboard: [
         [{ text: `🚀 Launch ${reward.name}`, web_app: { url: reward.url } }],
@@ -219,7 +234,7 @@ function sendInviteStatus(token, chatId) {
       ]
     });
   } else {
-    statusText += `🔗 **Your Exclusive Invite Link:**\n\`https://t.me/${botUsername}?start=ref_${chatId}\`\n\n*(Tap the link above to copy, and share it with your friends!)*`;
+    statusText += `🔗 **Your Exclusive Invite Link:**\n\`https://t.me/${botUsername}?start=ref_${chatId}\`\n\n*(Tap link to copy & share)*`;
     sendTelegramMessage(token, chatId, statusText, {
       inline_keyboard: [
         [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
@@ -268,9 +283,7 @@ function sendGamePreview(token, chatId, gameType) {
     photo: photoUrl,
     caption: caption,
     parse_mode: "Markdown",
-    reply_markup: {
-      inline_keyboard: replyMarkupButtons
-    }
+    reply_markup: { inline_keyboard: replyMarkupButtons }
   });
 
   const options = {
@@ -292,11 +305,7 @@ function sendGamePreview(token, chatId, gameType) {
 }
 
 function answerPreCheckoutQuery(token, preCheckoutQueryId) {
-  const data = JSON.stringify({
-    pre_checkout_query_id: preCheckoutQueryId,
-    ok: true
-  });
-
+  const data = JSON.stringify({ pre_checkout_query_id: preCheckoutQueryId, ok: true });
   const options = {
     hostname: 'api.telegram.org',
     port: 443,
@@ -308,7 +317,6 @@ function answerPreCheckoutQuery(token, preCheckoutQueryId) {
       'Content-Length': Buffer.byteLength(data)
     }
   };
-
   const req = https.request(options);
   req.end(data);
 }
@@ -342,12 +350,10 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
   const invoiceData = JSON.stringify({
     chat_id: chatId,
     title: `Unlock ${title}`,
-    description: `Pay ${amount} Telegram Stars to permanently unlock the ${title} game experience!`,
+    description: `Pay ${amount} Telegram Stars to permanently unlock ${title}!`,
     payload: payload,
     currency: "XTR",
-    prices: [
-      { label: `${title} Access`, amount: amount }
-    ]
+    prices: [{ label: `${title} Access`, amount: amount }]
   });
 
   const options = {
