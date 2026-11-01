@@ -6,6 +6,9 @@ const path = require('path');
 const PORT = process.env.PORT || 10000;
 const DB_FILE = path.join(__dirname, 'storage.json');
 
+// آیدی عددی ادمین (ثبت شده)
+const ADMIN_CHAT_ID = "7644249207"; 
+
 function loadDB() {
   try {
     if (fs.existsSync(DB_FILE)) {
@@ -52,9 +55,12 @@ const server = http.createServer((req, res) => {
           return;
         }
 
+        // بررسی پرداخت موفق و ارسال گزارش آنی به ادمین
         if (update.message?.successful_payment) {
           const chatId = update.message.chat.id;
+          const user = update.message.from;
           const payload = update.message.successful_payment.invoice_payload;
+          const totalAmount = update.message.successful_payment.total_amount;
 
           let gameUrl = "https://zzgames-f35.onrender.com";
           let gameName = "F-35 Fighter Jet";
@@ -72,16 +78,23 @@ const server = http.createServer((req, res) => {
             gameUrl = "https://two0castles.onrender.com";
             gameName = "20 Dzh: Elements Battle";
           } else if (payload === 'alphabet_game_access') {
-            gameUrl = "https://english-learning-pdc6.onrender.com"; // اصلاح شد به لینک درست رندر
+            gameUrl = "https://english-learning-pdc6.onrender.com";[span_0](start_span)[span_0](end_span)
             gameName = "Magic Alphabet Cube";
           }
 
+          // ارسال پیام موفقیت به کاربر
           sendTelegramMessage(BOT_TOKEN, chatId, `🎉 Congratulations! Payment verified successfully.\n\nTap below to launch your ${gameName}:`, {
             inline_keyboard: [
               [{ text: `🚀 Launch ${gameName} (Fullscreen)`, web_app: { url: gameUrl } }],
               [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
             ]
           });
+
+          // ارسال گزارش خرید موفق به ادمین
+          const usernameStr = user.username ? `@${user.username}` : (user.first_name || 'Unknown');
+          const adminAlertText = `💰 **گزارش خرید جدید!**\n\n👤 کاربر: ${usernameStr} (ID: \`${chatId}\`)\n🎮 بازی خریداری شده: **${gameName}**\n💎 مبلغ پرداختی: **${totalAmount} استارز**`;
+          sendTelegramMessage(BOT_TOKEN, ADMIN_CHAT_ID, adminAlertText);
+
           return;
         }
 
@@ -172,6 +185,10 @@ const server = http.createServer((req, res) => {
                         [{ text: "🏠 Back to Menu", callback_data: "back_to_menu" }]
                       ]
                     });
+
+                    // گزارش باز شدن بازی رایگان به ادمین
+                    const adminUnlockAlert = `🔓 **باز شدن بازی رایگان (از طریق دعوت دوستان)!**\n\n👤 کاربر معرف (ID: \`${referrerId}\`) موفق شد ۴ نفر دعوت کند و بازی **${randomGame.name}** برایش رایگان باز شد.`;
+                    sendTelegramMessage(BOT_TOKEN, ADMIN_CHAT_ID, adminUnlockAlert);
                   }
                   saveDB(db);
                 }
@@ -307,7 +324,7 @@ function sendGamePreview(token, chatId, gameType) {
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'alphabet') {
-    photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";[span_1](start_span)[span_1](end_span)
     caption = "🔤 **Magic Alphabet Cube (English Learning)**\n\n✨ Interactive 3D alphabet cubes with 260 words, audio pronunciation & good deeds mini-tasks!\n\n💎 **Permanent Access:** 10 Telegram Stars";
     replyMarkupButtons = [
       [{ text: "💳 Pay 10 Stars & Unlock", callback_data: "buy_alphabet" }],
