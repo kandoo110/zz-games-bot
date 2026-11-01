@@ -147,7 +147,7 @@ const server = http.createServer((req, res) => {
           } else if (callbackData === 'buy_puzzle') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'Castle Puzzle Game', 'puzzle_game_access', 15);
           } else if (callbackData === 'buy_20dzh') {
-            sendTelegramInvoice(BOT_TOKEN, chatId, '20 Dzh: Elements Battle', '20dzh_game_access', 35);
+            sendTelegramInvoice(BOT_TOKEN, chatId, '20 Dzh: Elements Battle', '20dzh_game_access', 15);
           } else if (callbackData === 'buy_alphabet') {
             sendTelegramInvoice(BOT_TOKEN, chatId, 'Magic Alphabet Cube', 'alphabet_game_access', 10);
           }
@@ -213,7 +213,7 @@ function sendGamesMenu(token, chatId) {
   const replyMarkup = {
     inline_keyboard: [
       [{ text: "🧊 Stack 3D (Free Game)", web_app: { url: "https://zzgames-stack3d.onrender.com" } }],
-      [{ text: "🔤 Magic Alphabet Cube (10 Stars / 499 WLF)", callback_data: "preview_alphabet" }],
+      [{ text: "🔤 Magic Alphabet Cube (10 Stars / 299 WLF)", callback_data: "preview_alphabet" }],
       [{ text: "🏰 Castle Puzzle: Save Princess (Stages 1-30 Free)", callback_data: "preview_puzzle" }],
       [{ text: "🛡️ 20 Dzh: Elements Strategy (Stages 1-12 Free)", callback_data: "preview_20dzh" }],
       [{ text: "🚀 F-35 Fighter Jet (30 Stars / 499 WLF)", callback_data: "preview_f35" }],
@@ -314,27 +314,28 @@ function sendGamePreview(token, chatId, gameType) {
     ];
   } else if (gameType === 'puzzle') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zz-games-puzzle/main/puzzle.jpg";
-    caption = "🏰 **Castle Puzzle: Save Princess**\n\n✨ Strategic puzzle campaign across 40 castles\n📌 **Stages 1 to 30 are completely FREE!**\n\n💎 **VIP Access Options (Stages 31-40):**\n⭐️ 15 Telegram Stars\n🪙 OR 499 $WLF Tokens";
+    caption = "🏰 **Castle Puzzle: Save Princess**\n\n✨ Strategic puzzle campaign across 40 castles\n📌 **Stages 1 to 30 are completely FREE!**\n\n💎 **VIP Access Options (Stages 31-40):**\n⭐️ 15 Telegram Stars\n🪙 OR 399 $WLF Tokens";
     replyMarkupButtons = [
       [{ text: "🚀 Launch Game (Free / Fullscreen)", web_app: { url: "https://zz-games-puzzle.onrender.com" } }],
       [{ text: "💳 Unlock VIP (15 Stars)", callback_data: "buy_puzzle" }],
-      [{ text: "🪙 Unlock VIP (499 $WLF)", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=puzzle&cost=499" } }],
+      [{ text: "🪙 Unlock VIP (399 $WLF)", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=puzzle&cost=399" } }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === '20dzh') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/20castles/main/20castles.jpg";
-    caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ Strategic four elements puzzle campaign & castle defense\n📌 **Stages 1 to 12 are completely FREE!**\n\n💎 **VIP Access Options:**\n⭐️ 35 Telegram Stars\n🪙 OR 499 $WLF Tokens";
+    caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ Strategic four elements puzzle campaign & castle defense\n📌 **Stages 1 to 12 are completely FREE!**\n\n💎 **VIP Access Options:**\n⭐️ 15 Telegram Stars\n🪙 OR 399 $WLF Tokens";
     replyMarkupButtons = [
       [{ text: "🚀 Launch Game (Free / Fullscreen)", web_app: { url: "https://two0castles.onrender.com" } }],
-      [{ text: "🪙 Pay with 499 $WLF Tokens", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=20dzh&cost=499" } }],
+      [{ text: "💳 Pay 15 Stars & Unlock", callback_data: "buy_20dzh" }],
+      [{ text: "🪙 Pay with 399 $WLF Tokens", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=20dzh&cost=399" } }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'alphabet') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";
-    caption = "🔤 **Magic Alphabet Cube (English Learning)**\n\n✨ Interactive 3D alphabet cubes with 260 words, audio pronunciation & good deeds mini-tasks!\n\n💎 **Permanent Access Options:**\n⭐️ 10 Telegram Stars\n🪙 OR 499 $WLF Tokens";
+    caption = "🔤 **Magic Alphabet Cube (English Learning)**\n\n✨ Interactive 3D alphabet cubes with 260 words, audio pronunciation & good deeds mini-tasks!\n\n💎 **Permanent Access Options:**\n⭐️ 10 Telegram Stars\n🪙 OR 299 $WLF Tokens";
     replyMarkupButtons = [
       [{ text: "💳 Pay 10 Stars & Unlock", callback_data: "buy_alphabet" }],
-      [{ text: "🪙 Pay with 499 $WLF Tokens", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=alphabet&cost=499" } }],
+      [{ text: "🪙 Pay with 299 $WLF Tokens", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=alphabet&cost=299" } }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   }
