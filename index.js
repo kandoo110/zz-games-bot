@@ -1,4 +1,4 @@
-Const http = require('http');
+const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
@@ -330,7 +330,7 @@ function sendGamePreview(token, chatId, gameType) {
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'alphabet') {
-    photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";[span_0](start_span)[span_0](end_span)
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";
     caption = "🔤 **Magic Alphabet Cube (English Learning)**\n\n✨ Interactive 3D alphabet cubes with 260 words, audio pronunciation & good deeds mini-tasks!\n\n💎 **Permanent Access Options:**\n⭐️ 10 Telegram Stars\n🪙 OR 499 $WLF Tokens";
     replyMarkupButtons = [
       [{ text: "💳 Pay 10 Stars & Unlock", callback_data: "buy_alphabet" }],
@@ -425,7 +425,7 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
     family: 4,
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(invoiceData)
+      'Content-Length': Buffer.byteLength(postData)
     }
   };
 
@@ -435,5 +435,5 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
 }
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`ZZ Games Bot server running on port ${PORT}`);
+  console.log(`ZZ Games Bot server server running on port ${PORT}`);
 });
