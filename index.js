@@ -274,7 +274,7 @@ function sendInviteStatus(token, chatId) {
       ]
     });
   } else {
-    statusText += `🔗 **Your Exclusive Invite Link:**\n\`https://t.me/${botUsername}?start=ref_${chatId}\`\n\n*(Tap link to copy & share)*`;
+    statusText += `🔗 **Your Exclusive Invite Link:**\n\`https://t.me/${botUsername}?start=ref_${chatId}\`\n\n*(Link to copy & share)*`;
     sendTelegramMessage(token, chatId, statusText, {
       inline_keyboard: [
         [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
@@ -425,15 +425,16 @@ function sendTelegramInvoice(token, chatId, title, payload, amount) {
     family: 4,
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(postData)
+      'Content-Length': Buffer.byteLength(invoiceData)
     }
   };
 
   const req = https.request(options);
+  req.on('error', (e) => console.error("Invoice Error:", e.message));
   req.write(invoiceData);
   req.end();
 }
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`ZZ Games Bot server server running on port ${PORT}`);
+  console.log(`ZZ Games Bot server running on port ${PORT}`);
 });
