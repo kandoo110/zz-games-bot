@@ -209,9 +209,10 @@ const server = http.createServer((req, res) => {
 });
 
 function sendGamesMenu(token, chatId) {
-  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game to play, unlock rewards, or launch the $WLF Mining App:";
+  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game to play, predict matches, unlock rewards, or launch the $WLF Mining App:";
   const replyMarkup = {
     inline_keyboard: [
+      [{ text: "🔮 WLF Prediction Arena (Crypto & Football)", web_app: { url: "https://prediction-ldxa.onrender.com/prediction.html" } }],
       [{ text: "🧊 Stack 3D (Free Game)", web_app: { url: "https://zzgames-stack3d.onrender.com" } }],
       [{ text: "🔤 Magic Alphabet Cube (10 Stars / 299 WLF)", callback_data: "preview_alphabet" }],
       [{ text: "🏰 Castle Puzzle: Save Princess (Stages 1-30 Free)", callback_data: "preview_puzzle" }],
