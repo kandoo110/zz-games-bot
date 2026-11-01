@@ -78,7 +78,7 @@ const server = http.createServer((req, res) => {
             gameUrl = "https://two0castles.onrender.com";
             gameName = "20 Dzh: Elements Battle";
           } else if (payload === 'alphabet_game_access') {
-            gameUrl = "https://english-learning-pdc6.onrender.com";[span_2](start_span)[span_2](end_span)
+            gameUrl = "https://english-learning-pdc6.onrender.com";
             gameName = "Magic Alphabet Cube";
           }
 
@@ -106,6 +106,7 @@ const server = http.createServer((req, res) => {
 
           if (!chatId) return;
 
+          // پاسخ سریع به کلیک کاربر تا دکمه از حالت لودینگ چرخان خارج شود
           const answerData = JSON.stringify({ callback_query_id: callbackQueryId, text: "" });
           const answerReq = https.request({
             hostname: 'api.telegram.org',
@@ -258,9 +259,7 @@ function sendInviteStatus(token, chatId) {
   const invitedList = db.referrals[chatId] || [];
   const count = invitedList.length;
   const reward = db.unlocked[chatId];
-  
-  // اصلاح یوزرنیم ربات به یوزرنیم اصلی شما (@zzgames_bot)
-  const botUsername = "zzgames_bot";[span_3](start_span)[span_3](end_span)
+  const botUsername = "zzgames_bot";
 
   let statusText = `🎁 **Invite Friends & Win Free Games!**\n\n`;
   statusText += `Invite 4 friends using your link. Once 4 friends join, one paid game will be unlocked for you completely **FREE**!\n\n`;
@@ -326,7 +325,7 @@ function sendGamePreview(token, chatId, gameType) {
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'alphabet') {
-    photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";[span_4](start_span)[span_4](end_span)
+    photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";[span_0](start_span)[span_0](end_span)
     caption = "🔤 **Magic Alphabet Cube (English Learning)**\n\n✨ Interactive 3D alphabet cubes with 260 words, audio pronunciation & good deeds mini-tasks!\n\n💎 **Permanent Access:** 10 Telegram Stars";
     replyMarkupButtons = [
       [{ text: "💳 Pay 10 Stars & Unlock", callback_data: "buy_alphabet" }],
