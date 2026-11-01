@@ -92,7 +92,7 @@
         const gameKey = urlParams.get('game') || 'game';
         const cost = urlParams.get('cost') || '499';
 
-        document.getElementById('price-display.innerText = `${cost} WLF Tokens`;
+        document.getElementById('price-display').innerText = cost + " WLF Tokens";
 
         function connectWallet() {
             setTimeout(() => {
@@ -102,8 +102,8 @@
         }
 
         function processPayment() {
-            // شبیه‌سازی موجودی کاربر (برای تست سناریوی کمبود موجودی شما)
-            let userBalance = 10; // فرض می‌کنیم کاربر فقط ۱۰ توکن دارد
+            // شبیه‌سازی موجودی کاربر (برای تست حالت کمبود موجودی و نمایش پیشنهادها)
+            let userBalance = 10; 
 
             if (userBalance < parseInt(cost)) {
                 const errBox = document.getElementById('error-container');
