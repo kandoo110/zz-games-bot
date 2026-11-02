@@ -9,6 +9,9 @@ const DB_FILE = path.join(__dirname, 'storage.json');
 // آیدی عددی ادمین
 const ADMIN_CHAT_ID = "7644249207"; 
 
+// آدرس کیف پول Tonkeeper شما برای دریافت پرداخت‌های TON
+const OWNER_TON_WALLET = "UQByK9oOXxjYegpN28D_Z9fRC9uKx0s0Nc2VXA316gVILS4e";
+
 function loadDB() {
   try {
     if (fs.existsSync(DB_FILE)) {
@@ -55,7 +58,7 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        // بررسی پرداخت موفق و ارسال گزارش آنی به ادمین
+        // بررسی پرداخت موفق ستاره‌ها و ارسال گزارش آنی به ادمین
         if (update.message?.successful_payment) {
           const chatId = update.message.chat.id;
           const user = update.message.from;
@@ -92,7 +95,7 @@ const server = http.createServer((req, res) => {
 
           // ارسال گزارش خرید موفق به ادمین
           const usernameStr = user.username ? `@${user.username}` : (user.first_name || 'Unknown');
-          const adminAlertText = `💰 **گزارش خرید جدید!**\n\n👤 کاربر: ${usernameStr} (ID: \`${chatId}\`)\n🎮 بازی خریداری شده: **${gameName}**\n💎 مبلغ پرداختی: **${totalAmount} استارز**`;
+          const adminAlertText = `💰 **گزارش خرید جدید (Stars)!**\n\n👤 کاربر: ${usernameStr} (ID: \`${chatId}\`)\n🎮 بازی خریداری شده: **${gameName}**\n💎 مبلغ پرداختی: **${totalAmount} استارز**`;
           sendTelegramMessage(BOT_TOKEN, ADMIN_CHAT_ID, adminAlertText);
 
           return;
@@ -187,7 +190,6 @@ const server = http.createServer((req, res) => {
                       ]
                     });
 
-                    // گزارش باز شدن بازی رایگان به ادمین
                     const adminUnlockAlert = `🔓 **باز شدن بازی رایگان (از طریق دعوت دوستان)!**\n\n👤 کاربر معرف (ID: \`${referrerId}\`) موفق شد ۴ نفر دعوت کند و بازی **${randomGame.name}** برایش رایگان باز شد.`;
                     sendTelegramMessage(BOT_TOKEN, ADMIN_CHAT_ID, adminUnlockAlert);
                   }
@@ -209,45 +211,32 @@ const server = http.createServer((req, res) => {
 });
 
 function sendGamesMenu(token, chatId) {
-  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game to play, predict matches, unlock rewards, or launch the $WLF Mining App:";
+  const responseText = "Welcome to **ZZ Games Platform**! 🎮🔥\n\nChoose an elite game to play, predict matches, unlock rewards, or launch options:";
   const replyMarkup = {
     inline_keyboard: [
       [{ text: "🔮 WLF Prediction Arena (Crypto & Football)", web_app: { url: "https://prediction-ldxa.onrender.com/prediction.html" } }],
       [{ text: "🧊 Stack 3D (Free Game)", web_app: { url: "https://zzgames-stack3d.onrender.com" } }],
-      [{ text: "🔤 Magic Alphabet Cube (10 Stars / 299 WLF)", callback_data: "preview_alphabet" }],
+      [{ text: "🔤 Magic Alphabet Cube (10 Stars / ~0.04 TON)", callback_data: "preview_alphabet" }],
       [{ text: "🏰 Castle Puzzle: Save Princess (Stages 1-30 Free)", callback_data: "preview_puzzle" }],
       [{ text: "🛡️ 20 Dzh: Elements Strategy (Stages 1-12 Free)", callback_data: "preview_20dzh" }],
-      [{ text: "🚀 F-35 Fighter Jet (30 Stars / 499 WLF)", callback_data: "preview_f35" }],
-      [{ text: "🛩️ B-2 Bomber (30 Stars / 499 WLF)", callback_data: "preview_b2" }],
-      [{ text: "🌌 Space War (30 Stars / 499 WLF)", callback_data: "preview_space" }],
-      [{ text: "⛏️ Launch $WLF Mining App", web_app: { url: "https://wlf-p1zk.onrender.com" } }],
+      [{ text: "🚀 F-35 Fighter Jet (30 Stars / ~0.12 TON)", callback_data: "preview_f35" }],
+      [{ text: "🛩️ B-2 Bomber (30 Stars / ~0.12 TON)", callback_data: "preview_b2" }],
+      [{ text: "🌌 Space War (30 Stars / ~0.12 TON)", callback_data: "preview_space" }],
       [{ text: "🎁 Invite 4 Friends & Get a Free Game!", callback_data: "invite_menu" }],
-      [{ text: "🪙 $WLF Token Info & Trading", callback_data: "wlf_token_info" }]
+      [{ text: "🪙 Token Info & Trading", callback_data: "wlf_token_info" }]
     ]
   };
   sendTelegramMessage(token, chatId, responseText, replyMarkup);
 }
 
 function sendWlfTokenInfo(token, chatId) {
-  let infoText = `🪙 **$WLF Token Ecosystem**\n\n`;
-  infoText += `Welcome to the official **$WLF Token** hub! $WLF powers our gaming community initiatives and rewards active players.\n\n`;
-  infoText += `📊 **Tokenomics & Security Highlights:**\n`;
-  infoText += `• **Total Supply:** 90,000,000 $WLF\n`;
-  infoText += `• **Liquidity Status:** ~20,000,000 $WLF 100% locked in DeDust.io liquidity pool (soon increasing to 27,000,000 $WLF). 🔒\n`;
-  infoText += `• **Community Allocation:** 5,000,000 $WLF allocated for community airdrops, mining, and rewards.\n`;
-  infoText += `• **Network:** TON Blockchain\n\n`;
-  infoText += `📌 **Contract Address:**\n\`EQAUEpGOGqbJy-UIxQ6qblhqAROxgDuiMeB17zImB90n6st0\`\n\n`;
-  infoText += `ℹ️ **More details and upcoming updates will be published soon!**\n\n`;
-  infoText += `🛒 **How to Buy & Trade $WLF:**\n`;
-  infoText += `1. Connect your TON Wallet (e.g., Tonkeeper) to DeDust.io.\n`;
-  infoText += `2. Use the buttons below to swap or view the liquidity pool instantly!\n\n`;
+  let infoText = `🪙 **Token & Ecosystem Info**\n\n`;
+  infoText += `Welcome to our gaming platform hub! Enjoy predicting matches and playing elite arcade games.\n\n`;
+  infoText += `📌 **Network:** TON Blockchain\n\n`;
   infoText += `👇 Choose an option below:`;
 
   const replyMarkup = {
     inline_keyboard: [
-      [{ text: "💱 Swap / Trade on DeDust.io", url: "https://dedust.io/swap/EQAUEpGOGqbJy-UIxQ6qblhqAROxgDuiMeB17zImB90n6st0/DUST" }],
-      [{ text: "💧 View Liquidity Pool", url: "https://dedust.io/pools/EQC-M-HKtgd0kQ8pyQqn_tQXeV376KS-5lhuelzlzUWWhdQu" }],
-      [{ text: "⛏️ Open $WLF Mining App", web_app: { url: "https://wlf-p1zk.onrender.com" } }],
       [{ text: "🏠 Back to Games Menu", callback_data: "back_to_menu" }]
     ]
   };
@@ -289,54 +278,57 @@ function sendGamePreview(token, chatId, gameType) {
   let caption = "";
   let replyMarkupButtons = [];
 
+  // مقادیر معادل‌سازی شده استارز به TON بر اساس استاندارد (هر 10 استارز معادل ~0.04 TON)
+  // آدرس کیف پول شما: OWNER_TON_WALLET = "UQByK9oOXxjYegpN28D_Z9fRC9uKx0s0Nc2VXA316gVILS4e"
+
   if (gameType === 'f35') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-f35/main/f35.jpg";
-    caption = "🎮 **F-35 Lightning II Air Combat**\n\n✨ High-performance atmospheric dogfight experience\n🎯 Advanced scoring & fluid arcade controls\n\n💎 **Permanent Access Options:**\n⭐️ 30 Telegram Stars\n🪙 OR 499 $WLF Tokens";
+    caption = "🎮 **F-35 Lightning II Air Combat**\n\n✨ High-performance atmospheric dogfight experience\n🎯 Advanced scoring & fluid arcade controls\n\n💎 **Permanent Access Options:**\n⭐️ 30 Telegram Stars\n💎 OR 0.12 TON (Direct to Wallet)";
     replyMarkupButtons = [
       [{ text: "💳 Pay 30 Stars & Unlock", callback_data: "buy_f35" }],
-      [{ text: "🪙 Pay with 499 $WLF Tokens", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=f35&cost=499" } }],
+      [{ text: "💎 Pay 0.12 TON (Direct)", url: `https://tonkeeper.com/transfer/${OWNER_TON_WALLET}?amount=120000000&text=Unlock_F35_${chatId}` }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'b2') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-B-2/main/B-2.jpg";
-    caption = "🛩️ **B-2 Bomber Stealth Mission**\n\n✨ Strategic precision bombing & tactical flight\n🎯 High-stakes defensive operations\n\n💎 **Permanent Access Options:**\n⭐️ 30 Telegram Stars\n🪙 OR 499 $WLF Tokens";
+    caption = "🛩️ **B-2 Bomber Stealth Mission**\n\n✨ Strategic precision bombing & tactical flight\n🎯 High-stakes defensive operations\n\n💎 **Permanent Access Options:**\n⭐️ 30 Telegram Stars\n💎 OR 0.12 TON (Direct to Wallet)";
     replyMarkupButtons = [
       [{ text: "💳 Pay 30 Stars & Unlock", callback_data: "buy_b2" }],
-      [{ text: "🪙 Pay with 499 $WLF Tokens", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=b2&cost=499" } }],
+      [{ text: "💎 Pay 0.12 TON (Direct)", url: `https://tonkeeper.com/transfer/${OWNER_TON_WALLET}?amount=120000000&text=Unlock_B2_${chatId}` }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'space') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zzgames-space-war/main/space-war.jpg";
-    caption = "🌌 **Space War Galaxy**\n\n✨ Epic galactic arcade shooter & cosmic combat\n🎯 Endless waves of interstellar enemies\n\n💎 **Permanent Access Options:**\n⭐️ 30 Telegram Stars\n🪙 OR 499 $WLF Tokens";
+    caption = "🌌 **Space War Galaxy**\n\n✨ Epic galactic arcade shooter & cosmic combat\n🎯 Endless waves of interstellar enemies\n\n💎 **Permanent Access Options:**\n⭐️ 30 Telegram Stars\n💎 OR 0.12 TON (Direct to Wallet)";
     replyMarkupButtons = [
       [{ text: "💳 Pay 30 Stars & Unlock", callback_data: "buy_space" }],
-      [{ text: "🪙 Pay with 499 $WLF Tokens", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=space&cost=499" } }],
+      [{ text: "💎 Pay 0.12 TON (Direct)", url: `https://tonkeeper.com/transfer/${OWNER_TON_WALLET}?amount=120000000&text=Unlock_Space_${chatId}` }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'puzzle') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/zz-games-puzzle/main/puzzle.jpg";
-    caption = "🏰 **Castle Puzzle: Save Princess**\n\n✨ Strategic puzzle campaign across 40 castles\n📌 **Stages 1 to 30 are completely FREE!**\n\n💎 **VIP Access Options (Stages 31-40):**\n⭐️ 15 Telegram Stars\n🪙 OR 399 $WLF Tokens";
+    caption = "🏰 **Castle Puzzle: Save Princess**\n\n✨ Strategic puzzle campaign across 40 castles\n📌 **Stages 1 to 30 are completely FREE!**\n\n💎 **VIP Access Options (Stages 31-40):**\n⭐️ 15 Telegram Stars\n💎 OR 0.06 TON (Direct to Wallet)";
     replyMarkupButtons = [
       [{ text: "🚀 Launch Game (Free / Fullscreen)", web_app: { url: "https://zz-games-puzzle.onrender.com" } }],
       [{ text: "💳 Unlock VIP (15 Stars)", callback_data: "buy_puzzle" }],
-      [{ text: "🪙 Unlock VIP (399 $WLF)", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=puzzle&cost=399" } }],
+      [{ text: "💎 Unlock VIP (0.06 TON)", url: `https://tonkeeper.com/transfer/${OWNER_TON_WALLET}?amount=60000000&text=Unlock_Puzzle_${chatId}` }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === '20dzh') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/20castles/main/20castles.jpg";
-    caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ Strategic four elements puzzle campaign & castle defense\n📌 **Stages 1 to 12 are completely FREE!**\n\n💎 **VIP Access Options:**\n⭐️ 15 Telegram Stars\n🪙 OR 399 $WLF Tokens";
+    caption = "🏰 **20 Dzh: Elements Battle (Strategy)**\n\n✨ Strategic four elements puzzle campaign & castle defense\n📌 **Stages 1 to 12 are completely FREE!**\n\n💎 **VIP Access Options:**\n⭐️ 15 Telegram Stars\n💎 OR 0.06 TON (Direct to Wallet)";
     replyMarkupButtons = [
       [{ text: "🚀 Launch Game (Free / Fullscreen)", web_app: { url: "https://two0castles.onrender.com" } }],
       [{ text: "💳 Pay 15 Stars & Unlock", callback_data: "buy_20dzh" }],
-      [{ text: "🪙 Pay with 399 $WLF Tokens", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=20dzh&cost=399" } }],
+      [{ text: "💎 Pay 0.06 TON (Direct)", url: `https://tonkeeper.com/transfer/${OWNER_TON_WALLET}?amount=60000000&text=Unlock_20Dzh_${chatId}` }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   } else if (gameType === 'alphabet') {
     photoUrl = "https://raw.githubusercontent.com/kandoo110/English-learning/main/English.jpg";
-    caption = "🔤 **Magic Alphabet Cube (English Learning)**\n\n✨ Interactive 3D alphabet cubes with 260 words, audio pronunciation & good deeds mini-tasks!\n\n💎 **Permanent Access Options:**\n⭐️ 10 Telegram Stars\n🪙 OR 299 $WLF Tokens";
+    caption = "🔤 **Magic Alphabet Cube (English Learning)**\n\n✨ Interactive 3D alphabet cubes with 260 words, audio pronunciation & good deeds mini-tasks!\n\n💎 **Permanent Access Options:**\n⭐️ 10 Telegram Stars\n💎 OR 0.04 TON (Direct to Wallet)";
     replyMarkupButtons = [
       [{ text: "💳 Pay 10 Stars & Unlock", callback_data: "buy_alphabet" }],
-      [{ text: "🪙 Pay with 299 $WLF Tokens", web_app: { url: "https://wlf-p1zk.onrender.com/pay.html?game=alphabet&cost=299" } }],
+      [{ text: "💎 Pay 0.04 TON (Direct)", url: `https://tonkeeper.com/transfer/${OWNER_TON_WALLET}?amount=40000000&text=Unlock_Alphabet_${chatId}` }],
       [{ text: "🔙 Back to Games Menu", callback_data: "back_to_menu" }]
     ];
   }
